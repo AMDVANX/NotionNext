@@ -111,7 +111,7 @@ const LayoutIndex = props => {
 
       {/* 最新文章区块 */}
       <PostSimpleListHorizontal
-        title='最新文章'
+        title='开始你的故事'
         href='/archive'
         posts={newPosts}
       />
