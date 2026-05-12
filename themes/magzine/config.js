@@ -15,8 +15,8 @@ const CONFIG = {
   MAGZINE_HERO_SUB_POST_COUNT: 2, // 首屏英雄区次要文章数量，通常2篇，如果关闭Banner，推荐改为3篇
 
   // 首页底部推荐文章标签, 例如 [推荐] , 最多六篇文章; 若留空白''，则推荐最近更新文章
-  MAGZINE_RECOMMEND_POST_TAG: '推荐',
-  MAGZINE_RECOMMEND_POST_COUNT: 6,
+  MAGZINE_RECOMMEND_POST_TAG: '',
+  MAGZINE_RECOMMEND_POST_COUNT: 0,
   MAGZINE_RECOMMEND_POST_TITLE: '推荐文章',
   MAGZINE_RECOMMEND_POST_SORT_BY_UPDATE_TIME: false, // 推荐文章排序，为`true`时将强制按最后修改时间倒序
 
@@ -38,73 +38,6 @@ const CONFIG = {
   MAGZINE_SOCIAL_CARD_TITLE_3: '点击加入社群',
   MAGZINE_SOCIAL_CARD_URL: 'https://docs.tangly1024.com/article/chat-community',
 
-  // 页脚菜单
-  //MAGZINE_FOOTER_LINKS:'//[
-    //{
-      name: '友情链接',
-      menus: [
-        {
-          title: 'Tangly的学习笔记',
-          href: 'https://blog.tangly1024.com'
-        },
-        {
-          title: 'NotionNext',
-          href: 'https://www.tangly1024.com'
-        }
-      ]
-    },
-    {
-      name: '开发者',
-      menus: [
-        { title: 'Github', href: 'https://github.com/tangly1024/NotionNext' },
-        {
-          title: '开发帮助',
-          href: 'https://docs.tangly1024.com/article/how-to-develop-with-notion-next'
-        },
-        {
-          title: '功能反馈',
-          href: 'https://github.com/tangly1024/NotionNext/issues/new/choose'
-        },
-        {
-          title: '技术讨论',
-          href: 'https://github.com/tangly1024/NotionNext/discussions'
-        },
-        {
-          title: '关于作者',
-          href: 'https://blog.tangly1024.com/about'
-        }
-      ]
-    },
-    {
-      name: '支持',
-      menus: [
-        {
-          title: '站长社群',
-          href: 'https://docs.tangly1024.com/article/chat-community'
-        },
-        {
-          title: '咨询与定制',
-          href: 'https://docs.tangly1024.com/article/my-service'
-        },
-        {
-          title: '升级手册',
-          href: 'https://docs.tangly1024.com/article/my-service'
-        },
-        {
-          title: '安装教程',
-          href: 'https://docs.tangly1024.com/article/how-to-update-notionnext'
-        },
-        { title: 'SEO推广', href: 'https://seo.tangly1024.com/' }
-      ]
-    },
-    {
-      name: '解决方案',
-      menus: [
-        { title: '建站工具', href: 'https://www.tangly1024.com/' },
-        { title: 'NotionNext', href: 'https://docs.tangly1024.com/about' }
-      ]
-    }
-  ],
 
 
   // 旧版本顶部菜单
