@@ -61,17 +61,15 @@ const TOKENS = `
     --vg-danger: #e0453a;
     --vg-ok: #4fbf87;
 
-    --vg-display: Futura, 'Futura Alt', 'Century Gothic', 'Avenir Next', Jost,
-      'Noto Sans SC', system-ui, sans-serif;
-    --vg-mono: 'Vigrid Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-    --vg-sans: 'Inter', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB',
-      'Microsoft YaHei', system-ui, -apple-system, sans-serif;
-    --vg-serif: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', SimSun, serif;
-
-    /* 大标题专用：拉丁取 Futura（缺失时 Jost 兜底），中文落到衬线宋体。
-       几何无衬线拉丁 + 宋体的组合，是中文编辑设计里常见的高对比搭配。 */
-    --vg-title: Futura, 'Futura Alt', 'Source Han Serif SC', 'Noto Serif SC',
-      'Songti SC', SimSun, serif;
+    /* 全部自托管，不依赖任何系统字体：
+       拉丁 = Futura Alt（Jost），中日韩 = Noto Serif SC，等宽 = Vigrid Mono。
+       这样任何设备、任何系统上渲染完全一致。 */
+    --vg-display: 'Futura Alt', 'Noto Serif SC', serif;
+    --vg-title: 'Futura Alt', 'Noto Serif SC', serif;
+    --vg-serif: 'Noto Serif SC', serif;
+    --vg-body: 'Noto Serif SC', serif;
+    --vg-sans: 'Futura Alt', 'Noto Serif SC', serif;
+    --vg-mono: 'Vigrid Mono', 'Noto Serif SC', monospace;
 
     --vg-pad: 16px;
     --vg-max: 1180px;
@@ -669,6 +667,7 @@ const BASE = `
   }
 
   .vg-post-sum {
+    font-family: var(--vg-body);
     font-size: 15px;
     line-height: 1.7;
     color: var(--vg-ink-2);
@@ -770,8 +769,9 @@ const BASE = `
   /* 正文 */
   .vg-article {
     margin-top: 22px;
-    font-size: 16px;
-    line-height: 1.9;
+    font-family: var(--vg-body);
+    font-size: 16.5px;
+    line-height: 1.95;
     color: var(--vg-ink);
     overflow-wrap: break-word;
     word-break: normal;
@@ -1495,6 +1495,85 @@ const BASE = `
 
   #theme-vigrid .vg-article .notion-hr {
     margin: 2em 0;
+  }
+
+
+  /* ================= 视觉强化 ================= */
+
+  /* 1) 首图：胶片处理（高对比 + 颗粒 + 四角定位标） */
+  .vg-hero--overlay .vg-hero-media img {
+    filter: grayscale(1) contrast(1.18) brightness(0.92);
+  }
+
+  .vg-hero-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* 四角 L 形定位标 */
+  .vg-hero--overlay {
+    position: relative;
+  }
+
+  .vg-hero--overlay::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image: linear-gradient(#fff, #fff), linear-gradient(#fff, #fff),
+      linear-gradient(#fff, #fff), linear-gradient(#fff, #fff),
+      linear-gradient(#fff, #fff), linear-gradient(#fff, #fff),
+      linear-gradient(#fff, #fff), linear-gradient(#fff, #fff);
+    background-repeat: no-repeat;
+    background-size: 15px 1px, 1px 15px, 15px 1px, 1px 15px, 15px 1px, 1px 15px,
+      15px 1px, 1px 15px;
+    background-position: left top, left top, right top, right top, left bottom,
+      left bottom, right bottom, right bottom;
+  }
+
+  @media (min-width: 720px) {
+    .vg-hero--overlay::after {
+      inset: 16px;
+      background-size: 22px 1px, 1px 22px, 22px 1px, 1px 22px, 22px 1px, 1px 22px,
+        22px 1px, 1px 22px;
+    }
+  }
+
+
+  /* 2) 引文：放大成拉引（pull quote），不用水印字形 */
+  #theme-vigrid .vg-article .notion-equation-block {
+    margin: 2.6em 0;
+    text-align: center;
+  }
+
+  #theme-vigrid .vg-article .notion-equation-block .katex,
+  #theme-vigrid .vg-article .notion-equation-block .katex-html,
+  #theme-vigrid .vg-article .notion-equation-block .katex .mord,
+  #theme-vigrid .vg-article .notion-equation-block .katex .mtext {
+    font-family: var(--vg-title) !important;
+    font-size: 1.16em !important;
+    line-height: 1.75 !important;
+  }
+
+  /* 3) 全页暗角：把视觉重心收进画面中央 */
+  #theme-vigrid::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    background: radial-gradient(
+      130% 90% at 50% 42%,
+      rgba(0, 0, 0, 0) 42%,
+      rgba(0, 0, 0, 0.42) 100%
+    );
   }
 
 `

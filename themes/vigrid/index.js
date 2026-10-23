@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import { useEffect } from 'react'
 import NotionPage from '@/components/NotionPage'
 import SmartLink from '@/components/SmartLink'
@@ -38,6 +39,12 @@ const LayoutBase = props => {
 
   return (
     <div id='theme-vigrid' className='vg-shell'>
+      <Head>
+        <link
+          rel='stylesheet'
+          href='/fonts/noto-serif-sc/noto-serif-sc.css'
+        />
+      </Head>
       <Style />
       <Header {...props} />
       <main className='vg-main'>{children}</main>
