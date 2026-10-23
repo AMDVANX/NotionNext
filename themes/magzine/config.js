@@ -44,7 +44,7 @@ const CONFIG = {
   MAGZINE_SOCIAL_CARD_URL: 'https://docs.tangly1024.com/article/chat-community',
 
   // 页脚菜单
-  MAGZINE_FOOTER_LINKS: []
+  MAGZINE_FOOTER_LINKS: [],
 
   // 旧版本顶部菜单
   MAGZINE_MENU_CATEGORY: true, // 显示分类

@@ -22,8 +22,12 @@ const SEO = props => {
   let url = PATH?.length ? createSiteUrl(LINK, SUB_PATH) || LINK : LINK
   let image
   const router = useRouter()
-  const meta = getSEOMeta(props, router, useGlobal()?.locale)
-  const webFontUrl = siteConfig('FONT_URL')
+  const globalCtx = useGlobal()
+  const meta = getSEOMeta(props, router, globalCtx?.locale)
+  // 主题自托管字体时（如 vigrid），跳过 FONT_URL 指向的外部字体，
+  // 避免为一套用不上的字体多拉十几个 woff2（中文字体尤其重）。
+  const skipWebFont = globalCtx?.THEME_CONFIG?.SKIP_WEB_FONT === true
+  const webFontUrl = skipWebFont ? [] : siteConfig('FONT_URL')
   const hasWebFontUrl = Array.isArray(webFontUrl)
     ? webFontUrl.filter(Boolean).length > 0
     : Boolean(webFontUrl)
@@ -52,7 +56,7 @@ const SEO = props => {
     }, 1500)
 
     return () => window.clearTimeout(timeoutId)
-  }, [hasWebFontUrl, webFontUrl])
+  }, [hasWebFontUrl, webFontUrl, skipWebFont])
 
   // SEO关键词
   const KEYWORDS = siteConfig('KEYWORDS')
