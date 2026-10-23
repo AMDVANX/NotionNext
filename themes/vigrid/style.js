@@ -981,7 +981,7 @@ const BASE = `
   .vg-hud-city {
     font-family: var(--vg-display);
     font-weight: 600;
-    font-size: 9.5px;
+    font-size: 9px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--vg-muted);
@@ -1031,6 +1031,20 @@ const BASE = `
     font-size: 9px;
     letter-spacing: 0.06em;
     color: var(--vg-faint);
+  }
+
+
+  /* 夏令时指示：STD 灰、DST 亮 */
+  .vg-hud-dst {
+    font-family: var(--vg-mono);
+    font-size: 8px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    color: var(--vg-faint);
+  }
+
+  .vg-hud-dst.is-dst {
+    color: var(--vg-ink-2);
   }
 
   .vg-hud-dot {

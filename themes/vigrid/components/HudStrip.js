@@ -3,25 +3,84 @@ import { useEffect, useState } from 'react'
 /**
  * 顶部 HUD 条
  *
- * 左（2/3）：四个城市时钟 —— 浏览器 Intl + IANA 时区，零请求，夏令时自动正确
- * 右（1/3）：伊瓦洛（Ivalo，芬兰最北城镇）当日气象 —— Open-Meteo，免密钥
- *          含日出日落与极昼/极夜判定
+ * 左（2/3）：四格时钟
+ *   1 UTC（固定）
+ *   2 Helsinki（固定）
+ *   3 / 4 从 CITY_POOL 中每次打开随机抽取
+ *   每格时区下方标注该城市当前是否处于夏令时（DST / STD）
  *
- * 全部英文。
+ * 右（1/3）：VIGRID 气象（数据源为伊瓦洛，坐标以 ??? 隐去）
  */
 
-const CITIES = [
-  { code: 'LONDON', tz: 'Europe/London' },
-  { code: 'HELSINKI', tz: 'Europe/Helsinki' },
-  { code: 'MOSCOW', tz: 'Europe/Moscow' },
-  { code: 'WASHINGTON DC', tz: 'America/New_York' }
+const FIXED_CITIES = [
+  { code: 'UTC', tz: 'UTC' },
+  { code: 'HELSINKI', tz: 'Europe/Helsinki' }
 ]
 
-// 伊瓦洛 Ivalo, Inari, Finnish Lapland —— 68.66°N 深入北极圈
-const WX_LAT = 68.66
-const WX_LON = 27.54
+/** 随机池：45 座城市 */
+const CITY_POOL = [
+  { code: 'SYDNEY', tz: 'Australia/Sydney' },
+  { code: 'SANTIAGO', tz: 'America/Santiago' },
+  { code: 'BEIJING', tz: 'Asia/Shanghai' },
+  { code: 'HONG KONG', tz: 'Asia/Hong_Kong' },
+  { code: 'SHANGHAI', tz: 'Asia/Shanghai' },
+  { code: 'SINGAPORE', tz: 'Asia/Singapore' },
+  { code: 'SEOUL', tz: 'Asia/Seoul' },
+  { code: 'TOKYO', tz: 'Asia/Tokyo' },
+  { code: 'DAMASCUS', tz: 'Asia/Damascus' },
+  { code: 'TEHRAN', tz: 'Asia/Tehran' },
+  { code: 'DOHA', tz: 'Asia/Qatar' },
+  { code: 'RIYADH', tz: 'Asia/Riyadh' },
+  { code: 'CAIRO', tz: 'Africa/Cairo' },
+  { code: 'JERUSALEM', tz: 'Asia/Jerusalem' },
+  { code: 'PARIS', tz: 'Europe/Paris' },
+  { code: 'STOCKHOLM', tz: 'Europe/Stockholm' },
+  { code: 'TRIPOLI', tz: 'Africa/Tripoli' },
+  { code: 'KANDAHAR', tz: 'Asia/Kabul' },
+  { code: 'YANGON', tz: 'Asia/Yangon' },
+  { code: 'BANGKOK', tz: 'Asia/Bangkok' },
+  { code: 'MANILA', tz: 'Asia/Manila' },
+  { code: 'HANOI', tz: 'Asia/Ho_Chi_Minh' },
+  { code: 'KYIV', tz: 'Europe/Kyiv' },
+  { code: 'NAIROBI', tz: 'Africa/Nairobi' },
+  { code: 'JOHANNESBURG', tz: 'Africa/Johannesburg' },
+  { code: 'MADRID', tz: 'Europe/Madrid' },
+  { code: 'CASABLANCA', tz: 'Africa/Casablanca' },
+  { code: 'GENEVA', tz: 'Europe/Zurich' },
+  { code: 'BRUSSELS', tz: 'Europe/Brussels' },
+  { code: 'JAKARTA', tz: 'Asia/Jakarta' },
+  { code: 'KUALA LUMPUR', tz: 'Asia/Kuala_Lumpur' },
+  { code: 'CHITA', tz: 'Asia/Chita' },
+  { code: 'NOVOSIBIRSK', tz: 'Asia/Novosibirsk' },
+  { code: 'ASTANA', tz: 'Asia/Almaty' },
+  { code: 'CHICAGO', tz: 'America/Chicago' },
+  { code: 'BOGOTA', tz: 'America/Bogota' },
+  { code: 'TAIPEI', tz: 'Asia/Taipei' },
+  { code: 'BUENOS AIRES', tz: 'America/Argentina/Buenos_Aires' },
+  { code: 'VIENNA', tz: 'Europe/Vienna' },
+  { code: 'MELBOURNE', tz: 'Australia/Melbourne' },
+  { code: 'FRANKFURT', tz: 'Europe/Berlin' },
+  { code: 'ANKARA', tz: 'Europe/Istanbul' },
+  { code: 'ATHENS', tz: 'Europe/Athens' },
+  { code: 'SAN DIEGO', tz: 'America/Los_Angeles' },
+  { code: 'WASHINGTON DC', tz: 'America/New_York' },
+  // —— 补全 UTC-10 ~ UTC+12 的偏移覆盖 ——
+  { code: 'HONOLULU', tz: 'Pacific/Honolulu' },
+  { code: 'DENVER', tz: 'America/Denver' },
+  { code: 'TORONTO', tz: 'America/Toronto' },
+  { code: 'LONDON', tz: 'Europe/London' },
+  { code: 'REYKJAVIK', tz: 'Atlantic/Reykjavik' },
+  { code: 'OSLO', tz: 'Europe/Oslo' },
+  { code: 'DUBAI', tz: 'Asia/Dubai' },
+  { code: 'DELHI', tz: 'Asia/Kolkata' },
+  { code: 'DHAKA', tz: 'Asia/Dhaka' },
+  { code: 'AUCKLAND', tz: 'Pacific/Auckland' },
+  { code: 'CHRISTCHURCH', tz: 'Pacific/Auckland' }
+]
+
+// 气象数据仍取自伊瓦洛（68.66N 27.54E），但对外显示为 VIGRID
 const WX_URL =
-  `https://api.open-meteo.com/v1/forecast?latitude=${WX_LAT}&longitude=${WX_LON}` +
+  'https://api.open-meteo.com/v1/forecast?latitude=68.66&longitude=27.54' +
   '&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m' +
   '&daily=sunrise,sunset,daylight_duration' +
   '&timezone=Europe%2FHelsinki&forecast_days=1'
@@ -58,6 +117,8 @@ const WMO = {
   99: 'THUNDERSTORM HAIL'
 }
 
+/* ---------------- 时区工具 ---------------- */
+
 const timeFmt = {}
 const offFmt = {}
 
@@ -78,7 +139,8 @@ function getTime(tz, date) {
   return p
 }
 
-function getOffset(tz, date) {
+/** 该时区在某一时刻相对 UTC 的偏移（分钟） */
+function offsetMinutes(tz, date) {
   if (!offFmt[tz]) {
     offFmt[tz] = new Intl.DateTimeFormat('en-US', {
       timeZone: tz,
@@ -88,8 +150,31 @@ function getOffset(tz, date) {
   const name =
     offFmt[tz].formatToParts(date).find(p => p.type === 'timeZoneName')?.value || ''
   const m = name.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/)
-  if (!m) return 'UTC'
-  return `UTC${m[1]}${String(m[2]).padStart(2, '0')}`
+  if (!m) return 0
+  const sign = m[1] === '-' ? -1 : 1
+  return sign * (parseInt(m[2], 10) * 60 + parseInt(m[3] || '0', 10))
+}
+
+function getOffsetText(tz, date) {
+  const mins = offsetMinutes(tz, date)
+  const sign = mins < 0 ? '-' : '+'
+  const abs = Math.abs(mins)
+  const h = String(Math.floor(abs / 60)).padStart(2, '0')
+  const mm = abs % 60
+  return mm === 0 ? `UTC${sign}${h}` : `UTC${sign}${h}:${String(mm).padStart(2, '0')}`
+}
+
+/**
+ * 是否处于夏令时：
+ * 取该时区当年 1 月与 7 月偏移的较小值作为「标准时间」，
+ * 当前偏移大于它即为夏令时。南北半球都适用。
+ */
+function isDST(tz, date) {
+  const y = date.getUTCFullYear()
+  const jan = offsetMinutes(tz, new Date(Date.UTC(y, 0, 1, 12)))
+  const jul = offsetMinutes(tz, new Date(Date.UTC(y, 6, 1, 12)))
+  const std = Math.min(jan, jul)
+  return offsetMinutes(tz, date) > std
 }
 
 function hhmm(iso) {
@@ -106,6 +191,8 @@ function daylightText(seconds) {
   return `${h}H ${String(m).padStart(2, '0')}M`
 }
 
+/* ---------------- 组件 ---------------- */
+
 const ClockCell = ({ city, now }) => {
   if (!now) {
     return (
@@ -120,9 +207,11 @@ const ClockCell = ({ city, now }) => {
       </div>
     )
   }
+
   const t = getTime(city.tz, now)
   const hour = Number(t.hour)
   const night = hour < 6 || hour >= 18
+  const dst = isDST(city.tz, now)
 
   return (
     <div className='vg-hud-cell'>
@@ -134,7 +223,10 @@ const ClockCell = ({ city, now }) => {
         <span className='vg-hud-sec'>:{t.second}</span>
       </span>
       <span className='vg-hud-foot'>
-        <span className='vg-hud-tz'>{getOffset(city.tz, now)}</span>
+        <span className='vg-hud-tz'>{getOffsetText(city.tz, now)}</span>
+        <span className={`vg-hud-dst ${dst ? 'is-dst' : ''}`}>
+          {dst ? 'DST' : 'STD'}
+        </span>
         <span
           className={`vg-hud-dot ${night ? 'is-night' : ''}`}
           aria-hidden='true'
@@ -196,7 +288,7 @@ const Weather = () => {
     <div className='vg-hud-wx'>
       <div className='vg-hud-wx-head'>
         <span className='vg-hud-wx-name'>Weather</span>
-        <span className='vg-hud-wx-coord'>IVALO 68.7N 27.5E</span>
+        <span className='vg-hud-wx-coord'>VIGRID ???</span>
       </div>
 
       <div className='vg-hud-wx-body'>
@@ -236,6 +328,7 @@ const Weather = () => {
 
 const HudStrip = () => {
   const [now, setNow] = useState(null)
+  const [picks, setPicks] = useState(null)
 
   useEffect(() => {
     setNow(new Date())
@@ -243,11 +336,32 @@ const HudStrip = () => {
     return () => clearInterval(id)
   }, [])
 
+  // 每次打开随机抽两座不重复的城市
+  useEffect(() => {
+    const pool = [...CITY_POOL]
+    const picked = []
+    for (let i = 0; i < 2 && pool.length > 0; i++) {
+      picked.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0])
+    }
+    setPicks(picked)
+  }, [])
+
+  const slots = [
+    FIXED_CITIES[0],
+    FIXED_CITIES[1],
+    picks ? picks[0] : { code: '— — —', tz: 'UTC' },
+    picks ? picks[1] : { code: '— — —', tz: 'UTC' }
+  ]
+
   return (
-    <section className='vg-hud' aria-label='Global time and Ivalo weather'>
+    <section className='vg-hud' aria-label='Global time and VIGRID weather'>
       <div className='vg-hud-clocks'>
-        {CITIES.map(c => (
-          <ClockCell key={c.tz} city={c} now={now} />
+        {slots.map((c, i) => (
+          <ClockCell
+            key={`${c.tz}-${c.code}-${i}`}
+            city={c}
+            now={i < 2 || picks ? now : null}
+          />
         ))}
       </div>
       <Weather />
