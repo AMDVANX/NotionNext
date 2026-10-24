@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import NotionPage from '@/components/NotionPage'
 import SmartLink from '@/components/SmartLink'
 import { siteConfig } from '@/lib/config'
@@ -368,55 +369,74 @@ const LayoutTagIndex = props => {
   )
 }
 
+/**
+ * 搜索
+ *
+ * 本站文章数量有限（十几篇），pageProps 里已经带全量 posts，
+ * 因此不走 Algolia，直接在客户端做子串过滤：标题 / 摘要 / 分类 / 标签 / slug。
+ * 输入即过滤，不需要提交；同时支持 ?s=xxx 深链。
+ */
 const LayoutSearch = props => {
-  const { keyword, posts } = props
+  const { posts, keyword: initialKeyword } = props
+  const router = useRouter()
+  const [q, setQ] = useState('')
+
+  // 从 URL 或服务端 props 取初始关键词
+  useEffect(() => {
+    const s = router?.query?.s
+    if (typeof s === 'string' && s) setQ(s)
+    else if (initialKeyword) setQ(String(initialKeyword))
+  }, [router?.query?.s, initialKeyword])
+
+  const list = Array.isArray(posts) ? posts : []
+  const needle = q.trim().toLowerCase()
+
+  const results = needle
+    ? list.filter(p => {
+        const hay = [
+          p.title,
+          p.summary,
+          p.category,
+          p.slug,
+          ...(Array.isArray(p.tagItems) ? p.tagItems.map(t => t.name) : [])
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase()
+        return hay.indexOf(needle) >= 0
+      })
+    : list
+
   return (
     <section className='vg-sec' style={{ marginTop: 18 }}>
-      <SectionHead
-        index='FIND'
-        title='SEARCH'
-      />
-      {!keyword ? (
-        <form action='/search' method='get' style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-          <input
-            type='search'
-            name='s'
-            placeholder='SEARCH KEYWORD'
-            aria-label='SEARCH KEYWORD'
-            style={{
-              flex: 1,
-              height: 44,
-              padding: '0 12px',
-              border: '1px solid var(--vg-line)',
-              background: 'var(--vg-panel)',
-              color: 'var(--vg-ink)',
-              fontFamily: 'var(--vg-mono)',
-              fontSize: 13,
-              borderRadius: 0,
-              outline: 'none'
-            }}
-          />
+      <SectionHead index='FIND' title='SEARCH' />
+
+      <div className='vg-search'>
+        <input
+          type='search'
+          className='vg-search-input'
+          value={q}
+          onChange={e => setQ(e.target.value)}
+          placeholder='SEARCH KEYWORD'
+          aria-label='SEARCH KEYWORD'
+          autoComplete='off'
+          spellCheck='false'
+        />
+        {q ? (
           <button
-            type='submit'
-            style={{
-              height: 44,
-              padding: '0 18px',
-              background: 'var(--vg-ink)',
-              color: 'var(--vg-bg)',
-              fontFamily: 'var(--vg-display)',
-              fontWeight: 700,
-              letterSpacing: '0.12em',
-              fontSize: 12,
-              border: '1px solid var(--vg-ink)',
-              borderRadius: 0,
-              cursor: 'pointer'
-            }}>
-            SCAN
+            type='button'
+            className='vg-search-clear'
+            onClick={() => setQ('')}
+            aria-label='CLEAR'>
+            CLEAR
           </button>
-        </form>
-      ) : (
-        <ListBody posts={posts} emptyText='NO MATCH' />
-      )}
+        ) : null}
+        <span className='vg-search-count'>
+          {String(results.length).padStart(2, '0')} FOUND
+        </span>
+      </div>
+
+      <ListBody posts={results} emptyText='NO MATCH // NO RECORDS FOUND' />
     </section>
   )
 }

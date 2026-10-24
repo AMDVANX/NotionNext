@@ -1283,6 +1283,77 @@ const BASE = `
     text-transform: uppercase;
   }
 
+  /* ---------- 搜索 ---------- */
+  .vg-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 16px 0 4px;
+  }
+
+  .vg-search-input {
+    flex: 1 1 220px;
+    min-width: 0;
+    height: 44px;
+    padding: 0 2px;
+    border: 0;
+    border-bottom: 1px solid var(--vg-line-soft);
+    background: transparent;
+    color: var(--vg-ink);
+    font-family: var(--vg-mono);
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    border-radius: 0;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+
+  /* 隐藏 WebKit 原生搜索清除按钮，避免出现蓝色图标 */
+  .vg-search-input::-webkit-search-cancel-button,
+  .vg-search-input::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
+  .vg-search-input::placeholder {
+    color: var(--vg-faint);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+
+  .vg-search-input:focus {
+    border-bottom-color: var(--vg-ink);
+  }
+
+  .vg-search-clear {
+    height: 32px;
+    padding: 0 8px;
+    border: 0;
+    background: transparent;
+    color: var(--vg-muted);
+    font-family: var(--vg-display);
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+
+  .vg-search-clear:hover {
+    color: var(--vg-ink);
+  }
+
+  .vg-search-count {
+    font-family: var(--vg-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--vg-faint);
+    white-space: nowrap;
+  }
+
   /* ---------- 空状态 ---------- */
   .vg-empty {
     padding: 40px 16px;
