@@ -372,12 +372,13 @@ const LayoutTagIndex = props => {
 /**
  * 搜索
  *
- * 本站文章数量有限（十几篇），pageProps 里已经带全量 posts，
- * 因此不走 Algolia，直接在客户端做子串过滤：标题 / 摘要 / 分类 / 标签 / slug。
- * 输入即过滤，不需要提交；同时支持 ?s=xxx 深链。
+ * 不走 Algolia，直接在客户端做子串过滤：标题 / 摘要 / 分类 / 标签 / slug。
+ *
+ * 注意：pages/search/index.js 自己会过滤一遍，且在无 ?s= 参数时
+ * 把 posts 覆盖成空数组。因此检索语料优先取 allNavPages（全量、不被过滤）。
  */
 const LayoutSearch = props => {
-  const { posts, keyword: initialKeyword } = props
+  const { posts, allNavPages, keyword: initialKeyword } = props
   const router = useRouter()
   const [q, setQ] = useState('')
 
@@ -388,24 +389,31 @@ const LayoutSearch = props => {
     else if (initialKeyword) setQ(String(initialKeyword))
   }, [router?.query?.s, initialKeyword])
 
-  const list = Array.isArray(posts) ? posts : []
+  const corpus =
+    Array.isArray(allNavPages) && allNavPages.length > 0
+      ? allNavPages
+      : Array.isArray(posts)
+        ? posts
+        : []
+
   const needle = q.trim().toLowerCase()
 
   const results = needle
-    ? list.filter(p => {
+    ? corpus.filter(p => {
         const hay = [
           p.title,
           p.summary,
           p.category,
           p.slug,
-          ...(Array.isArray(p.tagItems) ? p.tagItems.map(t => t.name) : [])
+          ...(Array.isArray(p.tagItems) ? p.tagItems.map(t => t.name) : []),
+          ...(Array.isArray(p.tags) ? p.tags : [])
         ]
           .filter(Boolean)
           .join(' ')
           .toLowerCase()
         return hay.indexOf(needle) >= 0
       })
-    : list
+    : corpus
 
   return (
     <section className='vg-sec' style={{ marginTop: 18 }}>
