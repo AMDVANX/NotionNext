@@ -76,6 +76,13 @@ const Header = props => {
           </nav>
         )}
 
+        <SmartLink
+          href='/map'
+          className={`vg-head-link ${isActive('/map') ? 'is-active' : ''}`}
+          aria-label='THEATRE MAP'>
+          MAP
+        </SmartLink>
+
         <SmartLink href='/search' className='vg-head-action' aria-label='SEARCH'>
           <IconSearch className='w-[18px] h-[18px]' />
         </SmartLink>

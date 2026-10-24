@@ -19,6 +19,7 @@ import Welcome from './components/Welcome'
 import PostRow from './components/PostRow'
 import PostMeta from './components/PostMeta'
 import Toc from './components/Toc'
+import MapBoard from './components/MapBoard'
 import { IconArrow } from './components/Icons'
 
 const cfg = (key, fallback) => siteConfig(key, fallback, CONFIG)
@@ -486,6 +487,13 @@ const LayoutDashboard = () => (
   </section>
 )
 
+const LayoutMap = () => (
+  <section className='vg-sec' style={{ marginTop: 18 }}>
+    <SectionHead index='GEO' title='THEATRE MAP' />
+    <MapBoard />
+  </section>
+)
+
 export {
   LayoutBase,
   LayoutIndex,
@@ -495,6 +503,7 @@ export {
   LayoutCategoryIndex,
   LayoutTagIndex,
   LayoutSearch,
+  LayoutMap,
   Layout404,
   LayoutSignIn,
   LayoutSignUp,

@@ -234,6 +234,22 @@ const BASE = `
     flex: 1 1 auto;
   }
 
+
+  .vg-head-link {
+    font-family: var(--vg-display);
+    font-weight: 600;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    color: var(--vg-muted);
+    padding: 6px 8px;
+    white-space: nowrap;
+  }
+
+  .vg-head-link:hover,
+  .vg-head-link.is-active {
+    color: var(--vg-ink);
+  }
+
   .vg-head-action {
     width: 44px;
     height: 44px;
@@ -1674,6 +1690,411 @@ const BASE = `
       rgba(0, 0, 0, 0.42) 100%
     );
   }
+
+  /* ---------- 态势地图 ---------- */
+  .vg-map {
+    margin-top: 24px;
+  }
+
+  .vg-map-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .vg-map-title {
+    font-family: var(--vg-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.16em;
+    color: var(--vg-ink);
+  }
+
+  .vg-map-sub {
+    font-family: var(--vg-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--vg-faint);
+  }
+
+  .vg-map-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 16px;
+  }
+
+  .vg-map-canvas {
+    position: relative;
+    background: var(--vg-sunken);
+    overflow: hidden;
+  }
+
+  .vg-map-canvas img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: grayscale(0.35) contrast(1.02);
+  }
+
+  .vg-map-layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* 地区热点 */
+  .vg-map-hot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    font-size: 8.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--vg-ink);
+    background: rgba(255, 255, 255, 0.9);
+    color: #101010;
+    font-family: var(--vg-mono);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: transform 0.14s ease, background 0.14s ease, color 0.14s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  }
+
+  .vg-map-hot.is-alert {
+    border-color: var(--vg-hot);
+  }
+
+  .vg-map-hot.is-contested {
+    border-color: var(--vg-danger);
+  }
+
+  .vg-map-hot:hover {
+    transform: translate(-50%, -50%) scale(1.18);
+  }
+
+  .vg-map-hot.is-active {
+    background: var(--vg-ink);
+    color: var(--vg-bg);
+    border-color: var(--vg-ink);
+    transform: translate(-50%, -50%) scale(1.24);
+  }
+
+  /* 聚落标记 */
+  .vg-map-city {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+    background: #101010;
+    transform: rotate(45deg);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  /* 面板 */
+  .vg-map-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .vg-map-idle {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 16px;
+    background: var(--vg-panel);
+  }
+
+  .vg-map-idle-title {
+    font-family: var(--vg-display);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--vg-muted);
+  }
+
+  .vg-map-idle-sub {
+    font-family: var(--vg-body);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--vg-faint);
+  }
+
+  .vg-map-dossier {
+    padding: 16px;
+    background: var(--vg-panel);
+  }
+
+  .vg-map-dossier-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .vg-map-dossier-id {
+    font-family: var(--vg-mono);
+    font-size: 20px;
+    line-height: 1;
+    color: var(--vg-ink);
+    padding-top: 1px;
+  }
+
+  .vg-map-dossier-names {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .vg-map-dossier-sv {
+    font-family: var(--vg-display);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--vg-ink);
+  }
+
+  .vg-map-dossier-sv em {
+    font-style: normal;
+    color: var(--vg-muted);
+    font-weight: 600;
+  }
+
+  .vg-map-dossier-cn {
+    font-family: var(--vg-body);
+    font-size: 12.5px;
+    color: var(--vg-muted);
+  }
+
+  .vg-map-close {
+    border: 0;
+    background: transparent;
+    color: var(--vg-faint);
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 2px;
+    cursor: pointer;
+  }
+
+  .vg-map-close:hover {
+    color: var(--vg-ink);
+  }
+
+  .vg-map-rows {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .vg-map-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .vg-map-key {
+    font-family: var(--vg-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    color: var(--vg-faint);
+    white-space: nowrap;
+  }
+
+  .vg-map-val {
+    font-family: var(--vg-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--vg-ink-2);
+    text-align: right;
+  }
+
+  .vg-map-status {
+    font-family: var(--vg-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--vg-muted);
+  }
+
+  .vg-map-status.is-alert {
+    color: var(--vg-hot);
+  }
+
+  .vg-map-status.is-contested {
+    color: var(--vg-danger);
+  }
+
+  .vg-map-threat {
+    display: inline-flex;
+    gap: 3px;
+  }
+
+  .vg-map-threat span {
+    width: 12px;
+    height: 4px;
+    background: var(--vg-line-hair);
+    display: block;
+  }
+
+  .vg-map-threat span.on {
+    background: var(--vg-ink);
+  }
+
+  .vg-map-sites {
+    margin-top: 14px;
+  }
+
+  .vg-map-sites ul {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .vg-map-sites li {
+    font-family: var(--vg-mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--vg-ink-2);
+    padding-left: 10px;
+    position: relative;
+  }
+
+  .vg-map-sites li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 4px;
+    height: 1px;
+    background: var(--vg-faint);
+  }
+
+  .vg-map-text {
+    margin: 14px 0 0;
+    font-family: var(--vg-body);
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--vg-ink-2);
+  }
+
+  .vg-map-text--empty {
+    color: var(--vg-faint);
+  }
+
+  /* 地区索引 */
+  .vg-map-index {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+    gap: 4px;
+  }
+
+  .vg-map-index-item {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    padding: 7px 8px;
+    border: 0;
+    background: var(--vg-sunken);
+    color: var(--vg-muted);
+    font-family: var(--vg-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    text-align: left;
+    overflow: hidden;
+  }
+
+  .vg-map-index-item b {
+    color: var(--vg-ink-2);
+    font-weight: 400;
+    flex: none;
+  }
+
+  .vg-map-index-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .vg-map-index-item:hover,
+  .vg-map-index-item.is-active {
+    background: var(--vg-ink);
+    color: var(--vg-bg);
+  }
+
+  .vg-map-index-item.is-active b,
+  .vg-map-index-item:hover b {
+    color: var(--vg-bg);
+  }
+
+  /* 图例 */
+  .vg-map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 14px;
+    font-family: var(--vg-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    color: var(--vg-faint);
+  }
+
+  .vg-map-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .vg-map-legend .dot {
+    width: 7px;
+    height: 7px;
+    border: 1.5px solid var(--vg-faint);
+    border-radius: 50%;
+    display: block;
+  }
+
+  .vg-map-legend .dot.is-alert {
+    border-color: var(--vg-hot);
+  }
+
+  .vg-map-legend .dot.is-contested {
+    border-color: var(--vg-danger);
+  }
+
+  .vg-map-legend .dot.is-city {
+    border: 0;
+    background: var(--vg-faint);
+    transform: rotate(45deg);
+    width: 6px;
+    height: 6px;
+  }
+
+  @media (min-width: 1024px) {
+    .vg-map-body {
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+    }
+    .vg-map-hot {
+      width: 30px;
+      height: 30px;
+      font-size: 11px;
+    }
+  }
+
 
 `
 
