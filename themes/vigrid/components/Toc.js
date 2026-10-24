@@ -44,7 +44,7 @@ const Toc = ({ toc }) => {
         {list.map((t, i) => (
           <a
             key={t.id || i}
-            href={`#${t.id}`}
+            href={`#${String(t.id || '').replace(/-/g, '')}`}
             className={t.indentLevel >= 1 ? 'lv3' : ''}>
             {t.text}
           </a>

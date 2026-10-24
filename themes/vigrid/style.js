@@ -631,6 +631,20 @@ const BASE = `
     overflow: hidden;
   }
 
+
+  /* 度量条分隔符 */
+  .vg-metabar-sep {
+    font-family: var(--vg-mono);
+    font-size: 11px;
+    color: var(--vg-faint);
+    opacity: 0.7;
+  }
+
+  /* 目录跳转时避开吸顶顶栏 */
+  #theme-vigrid .vg-article .notion-header-anchor {
+    scroll-margin-top: 84px;
+  }
+
   /* ---------- 文章页 ---------- */
   .vg-post-head {
     padding: 34px 0 0;

@@ -1,42 +1,27 @@
 /**
- * 文章元数据条
- * 形如：RECORD // Motive/VMFO · FILED 2025-09-30 · EDITED 2026-08-21
+ * 文章度量条
+ *
+ * 只保留「字数 + 预计阅读时长」，用正式英文表述：
+ *   5,200 WORDS · ESTIMATED READING TIME 17 MIN
  */
 const PostMeta = ({ post }) => {
   if (!post) return null
+
   const words = countWords(post)
+  if (!words) return null
+
   const minutes = Math.max(1, Math.round(words / 400))
 
   return (
     <div className='vg-metabar'>
       <span className='vg-metabar-item'>
-        RECORD <b>{post.slug || post.id?.slice(0, 8)}</b>
+        <b>{words.toLocaleString('en-US')}</b> WORDS
       </span>
-      {post.category ? (
-        <span className='vg-metabar-item'>
-          UNIT <b>{post.category}</b>
-        </span>
-      ) : null}
-      {post.publishDay ? (
-        <span className='vg-metabar-item'>
-          FILED <b>{post.publishDay}</b>
-        </span>
-      ) : null}
-      {post.lastEditedDay ? (
-        <span className='vg-metabar-item'>
-          EDITED <b>{post.lastEditedDay}</b>
-        </span>
-      ) : null}
+      <span className='vg-metabar-sep' aria-hidden='true'>
+        ·
+      </span>
       <span className='vg-metabar-item'>
-        {words > 0 ? (
-          <>
-            {words} CHR <b>≈ {minutes} MIN</b>
-          </>
-        ) : (
-          <>
-            READ <b>≈ {minutes} MIN</b>
-          </>
-        )}
+        ESTIMATED READING TIME <b>{minutes} MIN</b>
       </span>
     </div>
   )

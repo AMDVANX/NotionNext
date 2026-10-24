@@ -172,7 +172,6 @@ const LayoutSlug = props => {
               <span className='vg-chip'>{post.category}</span>
             </SmartLink>
           ) : null}
-          {post.type ? <span className='vg-chip vg-chip--ghost'>{post.type}</span> : null}
         </div>
 
         <h1 className='vg-post-title'>{post.title}</h1>
